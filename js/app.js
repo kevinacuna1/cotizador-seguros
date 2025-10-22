@@ -1,10 +1,55 @@
-function Seguro(marca, modelo, tipo) {
+function Seguro(marca, year, tipo) {
     this.marca = marca;
-    this.modelo = modelo;
+    this.year = year;
     this.tipo = tipo;
 }
 
-function UI() {}
+// Realiza la cotización con los datos
+// Utilizo function expression para poder usar el this y acceder a las propiedades del objeto
+Seguro.prototype.cotizarSeguro = function () {
+    /**
+     * 1 = Americano 1.15
+     * 2 = Asiático 1.05
+     * 3 = Europeo 1.35
+     */
+
+    let cantidad;
+
+    const base = 2000;
+
+    switch (this.marca) {
+        case '1':
+            cantidad = base * 1.15;
+            break;
+        case '2':
+            cantidad = base * 1.05;
+            break;
+        case '3':
+            cantidad = base * 1.35;
+            break;
+        default:
+            break;
+    }
+
+    // Calcular el año
+    const diferencia = new Date().getFullYear() - this.year;
+
+    // Cada año que la diferencia es mayor, el costo va a reducirse un 3%
+    cantidad -= ((diferencia * 3) / 100) * cantidad;
+
+    // Calcular el tipo de seguro
+    // Básico aumenta 30%
+    // Completo 50%
+    if (this.tipo === 'basico') {
+        cantidad *= 1.30;
+    } else {
+        cantidad *= 1.50;
+    }
+
+    return cantidad;
+}
+
+function UI() { }
 
 // Llenar las opciones de años
 UI.prototype.llenarOpciones = () => {
@@ -32,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 UI.prototype.mostrarMensaje = (mensaje, tipo) => {
     const div = document.createElement('div');
 
-    if(tipo === 'error') {
+    if (tipo === 'error') {
         div.classList.add('error');
     } else {
         div.classList.add('correcto');
@@ -77,6 +122,8 @@ function cotizarSeguro(e) {
     ui.mostrarMensaje('Cotizando...', 'exito');
 
     // Instanciar el seguro
+    const seguro = new Seguro(marca, year, tipo);
+    seguro.cotizarSeguro();
 
     // Utilizar el prototype que va a cotizar el seguro
 }
